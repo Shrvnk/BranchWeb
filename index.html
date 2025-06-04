@@ -11,37 +11,61 @@
        // init Branch
        </script>
       </head>
-         <script>
-          // Initialize Branch
-          branch.init('key_live_gCnJnMI2dWTfIZAhGcMYUbioFucFiQZi', function(err, data) {
-            if (err) {
-              console.error('Branch init error:', err);
-            } else {
-              console.log('Branch init success:', data);
-            }
-          });
-      
-          // Example: Log a custom event (optional)
-          /*
-          branch.logEvent("page_view", {
-            custom_data: {
-              page: "homepage"
-            }
-          }, function(err) {
-            if (err) {
-              console.error('Event logging error:', err);
-            } else {
-              console.log('Custom event logged successfully');
-            }
-          });
-          */
-        </script>
   <body>
     <div id="app"></div>
     <script type="module" src="/main.js"></script>
+
     <button><a href="loginpage.html">Login</a></button>
     <button><a href="register.html">Register</a></button>
     <button><a href="loginpage.html">Random</a></button>
-    <button>Create QR Code</button>
+    <button id="generateQR">Create QR Code</button>
+    <div id="branch-qr"></div>  
+
+    <!-- Branch init and QR generation script goes here -->
+    <script>
+      // Wait until DOM is fully loaded
+      window.addEventListener('DOMContentLoaded', function () {
+        // Initialize Branch
+        branch.init('key_live_gCnJnMI2dWTfIZAhGcMYUbioFucFiQZi', function(err, data) {
+          if (err) {
+            console.error('Branch init error:', err);
+          } else {
+            console.log('Branch init success:', data);
+          }
+        });
+
+        // QR code generation logic
+        document.getElementById('generateQR').addEventListener('click', function () {
+          const qr = branch.qrCode({
+            data: {
+              '$desktop_url': 'https://example.com',
+              'custom_string': 'qr-code-test'
+            },
+            image: {
+              format: 'png',
+              width: 250,
+              code_color: '#000000',
+              background_color: '#ffffff'
+            },
+            qrCodeSettings: {
+              margin: 2
+            }
+          });
+
+          qr.getBase64(function (err, data) {
+            if (err) {
+              console.error('QR Code error:', err);
+              return;
+            }
+
+            const img = document.createElement('img');
+            img.src = data;
+            const container = document.getElementById('branch-qr');
+            container.innerHTML = '';
+            container.appendChild(img);
+          });
+        });
+      });
+    </script>
   </body>
-</html>
+  </html>
